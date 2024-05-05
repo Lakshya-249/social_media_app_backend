@@ -1,0 +1,108 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id         String     @id
+  name       String
+  following  Follows[]  @relation("following")
+  followedBy Follows[]  @relation("followedBy")
+  Post       Post[]
+  Profile    Profile?
+  Like       Like[]
+  rooms      RoomUser[]
+  Comments   Comments[]
+  Story      Story[]
+}
+
+model Follows {
+  followedById String
+  followingId  String
+  followedBy   User   @relation("followedBy", fields: [followedById], references: [id])
+  following    User   @relation("following", fields: [followingId], references: [id])
+
+  @@id(name: "followees", [followingId, followedById])
+}
+
+model Post {
+  id        Int        @id @default(autoincrement())
+  image     String?
+  text      String?
+  user      User       @relation(fields: [userId], references: [id])
+  userId    String
+  posted_at DateTime   @default(now())
+  Like      Like[]
+  Comments  Comments[]
+}
+
+model Profile {
+  id       Int     @id @default(autoincrement())
+  image    String?
+  bio      String?
+  username String?
+  user     User    @relation(fields: [userId], references: [id])
+  userId   String  @unique
+}
+
+model Like {
+  post   Post   @relation(fields: [postId], references: [id])
+  postId Int
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  @@id(name: "likedBy", [userId, postId])
+}
+
+model Room {
+  id       String     @id @default(uuid())
+  roomname String
+  RoomUser RoomUser[]
+  messages messages[]
+}
+
+model RoomUser {
+  id     Int    @id @default(autoincrement())
+  userId String
+  roomId String
+  user   User   @relation(fields: [userId], references: [id])
+  room   Room   @relation(fields: [roomId], references: [id])
+
+  @@unique([userId, roomId])
+}
+
+model messages {
+  id         Int      @id @default(autoincrement())
+  room       Room     @relation(fields: [roomId], references: [id])
+  roomId     String
+  senderId   String
+  recieverId String
+  text       String
+  time       DateTime @default(now())
+}
+
+model Comments {
+  id     Int    @id @default(autoincrement())
+  post   Post   @relation(fields: [postId], references: [id])
+  postId Int
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+  text   String
+}
+
+model Story {
+  id     Int      @id @default(autoincrement())
+  user   User     @relation(fields: [userId], references: [id])
+  userId String
+  images String[]
+}
