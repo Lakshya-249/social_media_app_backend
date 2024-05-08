@@ -6,6 +6,10 @@ const prisma = new PrismaClient();
 async function followuser(req: Request, res: Response): Promise<void> {
   const { followerId, followedId } = req.body;
   try {
+    if (!followedId || !followerId) {
+      res.status(404).json({ error: "bad request.." });
+      return;
+    }
     const [follower, followed] = await Promise.all([
       prisma.user.findUnique({
         where: {
