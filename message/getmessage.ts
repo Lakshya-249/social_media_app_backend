@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
-import { equal } from "assert";
+import { log } from "console";
 
 const prisma = new PrismaClient();
 
@@ -19,7 +19,7 @@ async function getmessage(req: Request, res: Response): Promise<void> {
         ],
       },
       orderBy: {
-        time: "desc",
+        time: "asc",
       },
     });
     res.status(200).json(message);
@@ -29,4 +29,44 @@ async function getmessage(req: Request, res: Response): Promise<void> {
   }
 }
 
-export { getmessage };
+async function getuserfromMsg(req: Request, res: Response): Promise<void> {
+  const { user } = req.query;
+  try {
+    if (!user) {
+      res.status(400).json({ error: "Bad request" });
+      return;
+    }
+    const message = await prisma.messages.findMany({
+      where: {
+        senderId: String(user),
+      },
+      select: {
+        recieverId: true,
+      },
+      distinct: ["recieverId"],
+    });
+    if (!message) {
+      res.status(404).json({ value: "none" });
+      return;
+    }
+    log(message);
+    const rec_user = await prisma.profile.findMany({
+      where: {
+        userId: {
+          in: message.map((m) => m.recieverId),
+        },
+      },
+      select: {
+        userId: true,
+        image: true,
+        username: true,
+      },
+    });
+    res.status(200).json(rec_user);
+  } catch (error) {
+    console.error("Error following user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export { getmessage, getuserfromMsg };

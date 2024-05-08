@@ -8,7 +8,7 @@ import { profile } from "./user/profile";
 import { updateprofile } from "./user/updateprofile";
 import { updatepost } from "./posts/updatepost";
 import { deletemsg } from "./message/deletemsg";
-import { getmessage } from "./message/getmessage";
+import { getmessage, getuserfromMsg } from "./message/getmessage";
 import { getmyposts } from "./posts/getmypost";
 import { getuserposts } from "./posts/getuserposts";
 import { postcomment } from "./comment/postcomment";
@@ -30,6 +30,7 @@ router.get("/getlikes", getuserlikes);
 router.get("/checklike", ifLiked);
 router.get("/getuserstory", getuserstory);
 router.get("/getstory", getmystory);
+router.get("/getuser", getuserfromMsg);
 
 router.post("/createuser", createUser);
 router.post("/follow", followuser);
