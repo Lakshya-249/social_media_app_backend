@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { createUser } from "./user/createuser";
-import { followuser } from "./user/followuser";
+import { followuser, unfollowuser } from "./user/followuser";
 import { sendmessage } from "./message/message";
 import { posts } from "./posts/post";
 import { deletePost } from "./posts/deletepost";
@@ -19,6 +19,12 @@ import { deletelike, likepost } from "./likes/likes";
 import { getuserlikes, ifLiked } from "./likes/getlikes";
 import { getmystory, getuserstory } from "./Story/getstory";
 import { deleteStory, postStory } from "./Story/storypost";
+import {
+  getallfollowers,
+  getallfollowing,
+  getfollowedUser,
+  getusername,
+} from "./user/getuser";
 
 const router = Router();
 
@@ -30,7 +36,11 @@ router.get("/getlikes", getuserlikes);
 router.get("/checklike", ifLiked);
 router.get("/getuserstory", getuserstory);
 router.get("/getstory", getmystory);
-router.get("/getuser", getuserfromMsg);
+router.get("/getusermsg", getuserfromMsg);
+router.get("/getallfollowers", getallfollowers);
+router.get("/getallfollowing", getallfollowing);
+router.get("/getfolloweduser", getfollowedUser);
+router.get("/getusername", getusername);
 
 router.post("/createuser", createUser);
 router.post("/follow", followuser);
@@ -50,5 +60,6 @@ router.delete("/deletemessage", deletemsg);
 router.delete("/deletecomment", deletecomment);
 router.delete("/deletelike", deletelike);
 router.delete("/deletestory", deleteStory);
+router.delete("/unfollowuser", unfollowuser);
 
 export default router;

@@ -52,4 +52,24 @@ async function followuser(req: Request, res: Response): Promise<void> {
   }
 }
 
-export { followuser };
+async function unfollowuser(req: Request, res: Response): Promise<void> {
+  const { userId, followerId } = req.query;
+  try {
+    const user = await prisma.follows.delete({
+      where: {
+        followees: {
+          followedById: String(userId),
+          followingId: String(followerId),
+        },
+      },
+    });
+    res
+      .status(200)
+      .json({ success: true, data: user, message: "unfollowed succesfully" });
+  } catch (error) {
+    console.error("Error following user:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
+export { followuser, unfollowuser };
