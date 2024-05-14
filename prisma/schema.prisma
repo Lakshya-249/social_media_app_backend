@@ -39,6 +39,7 @@ model Post {
   id        Int        @id @default(autoincrement())
   image     String?
   text      String?
+  caption   String?
   user      User       @relation(fields: [userId], references: [id])
   userId    String
   posted_at DateTime   @default(now())
@@ -47,12 +48,17 @@ model Post {
 }
 
 model Profile {
-  id       Int     @id @default(autoincrement())
-  image    String?
-  bio      String?
-  username String?
-  user     User    @relation(fields: [userId], references: [id])
-  userId   String  @unique
+  id           Int     @id @default(autoincrement())
+  image        String?
+  bio          String?
+  username     String?
+  status       String?
+  DOB          String?
+  gender       String?
+  location     String?
+  social_media String?
+  user         User    @relation(fields: [userId], references: [id])
+  userId       String  @unique
 }
 
 model Like {

@@ -29,6 +29,28 @@ async function getmessage(req: Request, res: Response): Promise<void> {
   }
 }
 
+function formatted_date() {
+  var result = "";
+  var d = new Date(Date.now() - 1000 * 60 * 60 * 24 * 14);
+  result +=
+    d.getFullYear() +
+    "-" +
+    (d.getMonth() + 1) +
+    "-" +
+    d.getDate() +
+    " " +
+    d.getHours() +
+    ":" +
+    d.getMinutes() +
+    ":" +
+    d.getSeconds() +
+    " " +
+    d.getMilliseconds();
+  return result;
+}
+
+console.log(formatted_date());
+
 async function getuserfromMsg(req: Request, res: Response): Promise<void> {
   const { user } = req.query;
   try {
@@ -38,7 +60,10 @@ async function getuserfromMsg(req: Request, res: Response): Promise<void> {
     }
     const message = await prisma.messages.findMany({
       where: {
-        senderId: String(user),
+        OR: [{ senderId: String(user) }, { recieverId: String(user) }],
+        time: {
+          gte: formatted_date(),
+        },
       },
       select: {
         recieverId: true,
@@ -60,6 +85,7 @@ async function getuserfromMsg(req: Request, res: Response): Promise<void> {
         userId: true,
         image: true,
         username: true,
+        bio: true,
       },
     });
     res.status(200).json(rec_user);

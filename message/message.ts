@@ -4,9 +4,9 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function sendmessage(req: Request, res: Response): Promise<void> {
-  const { sender, reciever, text } = req.body;
+  const { senderId, recieverId, text } = req.body;
   try {
-    if (!sender || !reciever) {
+    if (!senderId || !recieverId) {
       res.status(404).json({ error: "sender or reciever not found" });
       return;
     }
@@ -16,14 +16,14 @@ async function sendmessage(req: Request, res: Response): Promise<void> {
           {
             RoomUser: {
               some: {
-                userId: sender,
+                userId: senderId,
               },
             },
           },
           {
             RoomUser: {
               some: {
-                userId: reciever,
+                userId: recieverId,
               },
             },
           },
@@ -43,8 +43,8 @@ async function sendmessage(req: Request, res: Response): Promise<void> {
       data: {
         text: text,
         roomId: roomid.id,
-        senderId: sender,
-        recieverId: reciever,
+        senderId: senderId,
+        recieverId: recieverId,
       },
     });
 
