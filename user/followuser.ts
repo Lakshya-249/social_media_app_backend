@@ -35,6 +35,32 @@ async function followuser(req: Request, res: Response): Promise<void> {
       },
     });
 
+    const findroom = await prisma.room.findFirst({
+      where: {
+        AND: [
+          {
+            RoomUser: {
+              some: {
+                userId: followedId,
+              },
+            },
+          },
+          {
+            RoomUser: {
+              some: {
+                userId: followerId,
+              },
+            },
+          },
+        ],
+      },
+    });
+    if (findroom !== null) {
+      res.status(200).json({ success: true, data: { follow, findroom } });
+      console.log(findroom);
+      return;
+    }
+
     const room = await prisma.room.create({
       data: {
         roomname: `${follower.name}_${followed.name}`,

@@ -26,7 +26,14 @@ async function getuserposts(req: Request, res: Response): Promise<void> {
       include: {
         followedBy: {
           select: {
+            id: true,
             Post: true,
+            Profile: {
+              select: {
+                username: true,
+                image: true,
+              },
+            },
           },
         },
       },
